@@ -2,11 +2,19 @@
 #include <LiquidCrystal.h>
 
 //declaracion de variables
+unsigned int tamArray = 0;
+unsigned int pos = 0;
+int cant = 0;
 int val = 0;
 int max;
-int cant = 0;
+bool funcAn = false;
+bool bul = false;
 bool medFrec = true;
-unsigned int tamArray = 0;
+bool control = true;
+
+float starTime ;
+float endTime ;
+int* ptrArray = nullptr;
 LiquidCrystal lcd_1(12, 11, 5, 4, 3, 2);
 
 //Declaracion de funciones
@@ -61,34 +69,12 @@ float calcularFrecuencia(int datos[], int longitud, float intervaloTiempo) {
       float frecuencia = 1.0 / (finCiclo - inicioCiclo) * intervaloTiempo;
       return frecuencia;
     } 
-    else if {
+    else{
       return -1;
     }
 }
 
 
-//llenar arreglo
-fillArray(bul, ptrFillArray){
-  if (bul == true){
-    if (pos< cant){
-  		ptrFillArray[pos] = val;
-      	pos += 1;
-    }
-    else if (pos>=cant*4){
-    	cant *= 2;
-    	int* nuevoArray = new int[cant];  
-    	for (int i = 0; i < size; i++) {
-	  		newArray[i] = ptrFillArray[i];
-    	}
-    	delete[] ptrFillArray;  
-    	ptrFillArray = newArray; 
-    }
-  }  
-  if (bul == true){
-  return (ptrArray);
-  }
-  
-}
 
 
 //VOID SETUP
@@ -99,28 +85,33 @@ void setup()
   lcd_1.begin(16, 2); // Set up the number of columns and rows on the LCD.
   Serial.begin(9600);
   int pos = 0;
+  for (int counter = 0; counter < 20; counter++) {
+    int a = analogRead(0);
+  }
   int start = analogRead(0);
-
+  
 //creacion del array principal (no se puede poner en una funcion por el ciclo)
 
   while(cant== 0){
   	int val = analogRead(0);
-    max = val;
+    Serial.println(val);
+    if (control == true){
+    	max = val-1;
+      	control = false;
+    }
     if (val>max){
       	max = val;
     }
     else if (val<max){
-    	cant = (start - max)*4;
+    	cant = (max - start)*4;
   	}
   }
-  int* ptrArrary= new int [cant];
+  int* ptrArray= new int [cant];
 }
 
 //VOID LOOP
 void loop()
 {
-  
-  lcd_1.setCursor(0, 0);
   int val = analogRead(0);
   Serial.println(val);
   
@@ -130,36 +121,52 @@ void loop()
 
   
   if(pulOn > 0){
-    bool buu = true;
-    unsigned float starTime =  millis();
+    bul = true;
+    starTime =  millis();
   	delay(250);
   }
   
   
-  ptrArray = fillArray(buu,ptrArray);
+  if (bul == true){
+    if (pos< cant){
+  		ptrArray[pos] = val;
+      	pos += 1;
+    }
+    else if (pos>=cant*4){
+    	cant *= 2;
+    	int* newArray = new int[cant];  
+    	for (int i = 0; i < pos; i++) {
+	  		newArray[i] = ptrArray[i];
+    	}
+    	delete[] ptrArray;  
+    	ptrArray = newArray; 
+    }
+  }  
   
-  if (buu == true){
-    tamArray += 1;
-  }
 
   if (pulOff > 0){
-    buu = false;
+    bul = false;
     funcAn= true;
-  	delay(50)
+  	delay(50);
   }
   
   if (funcAn==true){
   	if(ptrArray[0] == val && medFrec == true){
-      unsigned float endTime =  millis();
+      endTime =  millis();
       medFrec = false;
     }
-    unsigned float totalTime = (endTime -starTime);
-    unsigned float amplitud = calcularAmp(ptrArray, tamArray);
-    float frecuencia =  calcularFrecuencia(ptrArray, tamArray, totalTime)
-  
+    float totalTime = (endTime -starTime);
+    float amplitud = calcularAmp(ptrArray, pos);
+    float frecuencia =  calcularFrecuencia(ptrArray, pos, totalTime);
+  	lcd_1.setCursor(0, 0);
+    lcd_1.print(amplitud);
+    lcd_1.setCursor(0, 1);
+    lcd_1.print(frecuencia);
   }
     
 }
     
-  
-        
+
+          
+          
+          
